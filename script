@@ -1,0 +1,242 @@
+#!/bin/bash
+
+echo "This script was written by LufyCZ"
+sleep 0.1
+echo "The rooting scripts were written by @Nolirium"
+sleep 0.1
+echo ""
+
+if !  [[ $EUID -ne 0 ]]; then
+   echo "This script must not be run as root" 
+   exit 1
+fi
+
+function fun_menu {
+
+PS3='Please enter your choice: '
+options=("Default things" "Remove RootFS verification" "Install Chromebrew" "Root Android #1" "Root Android #2" "Run Crouton" "Quit")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Default things")
+            fun_default
+;;
+	"Remove RootFS verification")
+	    echo_red "This will reboot your device"
+	    sleep 1
+	    sudo bash /usr/share/vboot/bin/make_dev_ssd.sh --remove_rootfs_verification --partitions 4
+	    sudo reboot
+;;
+        "Install Chromebrew")
+            fun_chromebrew
+;;
+        "Root Android #1")
+            fun_android1
+;;
+        "Root Android #2")
+            fun_android2
+;;
+        "Run Crouton")
+            fun_crouton
+;;
+        "Quit")
+            break
+            ;;
+        *) echo_red "Invalid option"
+        ;;
+    esac
+done
+}
+
+function fun_default {
+        echo_green "Remounting / as read-write"
+        sleep 0.2
+
+        sudo mount -o remount,rw /
+
+
+        echo_green "Setting up ssh"
+        sleep 0.2
+
+        sudo touch /etc/init/ssh-startup.conf
+        sudo chmod 777 /etc/init/ssh-startup.conf
+        sudo echo "start on starting system-services" > /etc/init/ssh-startup.conf
+        sudo echo "" >> /etc/init/ssh-startup.conf
+        sudo echo "script" >> /etc/init/ssh-startup.conf
+        sudo echo "sudo /usr/sbin/sshd" >> /etc/init/ssh-startup.conf
+        sudo echo "end script" >> /etc/init/ssh-startup.conf
+
+        echo_green "Setting up power manager"
+        #echo ""
+        sleep 0.2
+
+        sudo cp /usr/share/power_manager/use_lid /var/lib/power_manager/use_lid
+        sudo chmod 777 "/var/lib/power_manager/use_lid"
+
+
+        echo_green "Setting up bash shortcuts"
+        #echo ""
+        sleep 0.2
+        
+	touch c #Will shorten "clear" to "c"
+	echo "clear">c
+	sudo mv c /usr/bin/c
+
+        touch lid_off #Will set powerd to completely ignore the lid events. Useful for playing music etc.
+        echo '#
+        sudo echo 0 >/var/lib/power_manager/use_lid
+        sudo restart powerd' >lid_off
+        sudo mv lid_off "/usr/bin/lid_off"
+
+        touch lid_on #Will turn the lid function back on
+        echo '#
+        sudo echo 1 >/var/lib/power_manager/use_lid
+        sudo restart powerd' >lid_on
+        sudo mv lid_on "/usr/bin/lid_on"
+
+        touch vm #My personal shortcut, replace it with your own or ignore it 
+        echo 'sudo startgnome' >vm
+        sudo mv vm "/usr/bin/vm"
+
+        touch bup #Brightness controls don't work for me in crouton, so instead of turning off crouton and changing brightness, I can ssh into ChromeOS and change it from there.
+        echo 'sudo backlight_tool --set_brightness_percent=100.0' >bup
+        sudo mv bup "/usr/bin/bup"
+
+        touch bdn
+        echo 'sudo backlight_tool --set_brightness_percent=60.0' >bdn
+        sudo mv bdn '/usr/bin/bdn'
+
+        touch bwdn
+        echo 'sudo backlight_tool --set_brightness_percent=20.0' >bwdn
+        sudo mv bwdn '/usr/bin/bwdn'
+
+	sudo chmod a+x "/usr/bin/c"
+        sudo chmod a+x "/usr/bin/lidz"
+        sudo chmod a+x "/usr/bin/lidv"
+        sudo chmod a+x "/usr/bin/vm"
+        sudo chmod a+x "/usr/bin/bup"
+        sudo chmod a+x "/usr/bin/bdn"
+        sudo chmod a+x "/usr/bin/bwdn"
+        
+        sleep 0.2
+    
+}
+
+function fun_chromebrew {
+        echo_green "Installing Chromebrew. This may take a while."
+        echo ""
+        wget -q -O - https://raw.github.com/skycocker/chromebrew/master/install.sh | bash >/dev/null 2>&1
+}
+
+function fun_android1 {
+        cd /home/chronos/user/Downloads
+        echo_green "Downloading SuperSU"
+        wget http://www32.zippyshare.com/d/bX9shPJG/50331/supersu.tar.gz
+        tar -xzvf supersu.tar.gz
+        mv supersu/common common
+        mv supersu/x86 x86
+        sudo mkdir /tmp/android-root
+        cd /tmp/android-root
+        sudo chmod 777 /tmp/android-root
+        wget http://www60.zippyshare.com/d/CLdxvmbe/49960/01Root.sh
+        sudo chmod +x 01Root.sh
+        sudo sh 01Root.sh
+	    sudo reboot	
+}
+
+function fun_android2 {
+        sudo mkdir /tmp/android-root
+        cd /tmp/android-root
+        sudo chmod 777 /tmp/android-root
+        wget http://www115.zippyshare.com/d/ZRUyck5c/1629/02SEPatch.sh
+        sudo chmod +x 02SEPatch.sh
+        sudo sh 02SEPatch.sh
+	    sudo reboot
+}
+
+function fun_quit {
+        exit
+}
+
+function echo_red()
+{
+echo -e "\E[0;31m$1"
+echo -e '\e[0m'
+}
+
+function echo_green()
+{
+echo -e "\E[0;32m$1"
+echo -e '\e[0m'
+}
+
+function fun_crouton {
+    echo "Test"
+    sudo mkdir /tmp/crouton >/dev/null 2>&1
+    cd /tmp/crouton
+    
+    if ! [ -e crouton ] 
+    then
+    sudo wget https://raw.githubusercontent.com/dnschneid/crouton/master/installer/crouton >/dev/null 2>&1      
+    fi
+    
+    function fun_crouton_menu {
+    PS3='Please enter your choice: '
+    options=("View all options" "List all releases" "List all targets" "Create bash shortcuts" "Create a new chroot" "Other option (fill in the arguments)" "Quit")
+    select opt in "${options[@]}"
+    do
+    case $opt in
+        "View all options")
+            sudo bash crouton
+            ;;
+        "List all releases")
+            sudo bash crouton -r list
+            ;;
+        "List all targets")
+            sudo bash crouton -t list
+            ;;
+        "Create bash shortcuts")
+            sudo bash crouton -b
+            ;;
+        "Create a new chroot")
+            echo "Enter the release"
+            read v_release
+            echo "Enter the target(s)"
+            read v_target
+            fun_crouton_make
+            ;;
+        "Other option (fill in the arguments)")
+            read v_ownopt #A really shitty solution
+	    sudo echo "sudo bash crouton">ownopt
+            sudo echo "$v_ownopt">>ownopt
+            sudo bash ownopt
+            sudo rm -r ownopt 
+            ;;
+        "Quit")
+            sudo rm -r crouton
+            break
+            ;;
+        *) echo_red Invalid option!;;
+    esac
+    done
+    }
+    
+    function fun_crouton_make {
+    if [ -z $v_release ]
+        then
+            v_release=xenial
+        echo "1"
+    fi
+    if [ -z $v_target ]
+        then
+            echo "You need to specify a target"
+    else
+        sudo bash crouton -r $v_release -t $v_target
+    fi
+    }
+fun_crouton_menu
+}
+
+fun_menu
+
+
