@@ -132,14 +132,14 @@ function fun_chromebrew {
 function fun_android1 {
         cd /home/chronos/user/Downloads
         echo_green "Downloading SuperSU"
-        wget https://github.com/Lukyczk/ChromeOS-Setup-script/raw/master/rooting%20scripts/supersu.tar.gz
+        wget https://github.com/LufyCZ/ChromeOS-Setup-script/raw/master/rooting%20scripts/supersu.tar.gz
         tar -xzvf supersu.tar.gz
         mv supersu/common common
         mv supersu/x86 x86
         sudo mkdir /tmp/android-root
         cd /tmp/android-root
         sudo chmod 777 /tmp/android-root
-        wget https://raw.githubusercontent.com/Lukyczk/ChromeOS-Setup-script/master/rooting%20scripts/01Root.sh
+        wget https://raw.githubusercontent.com/LufyCZ/ChromeOS-Setup-script/master/rooting%20scripts/01Root.sh
         sudo chmod +x 01Root.sh
         sudo sh 01Root.sh
 	cd ~/Downloads
@@ -152,7 +152,7 @@ function fun_android2 {
         sudo mkdir /tmp/android-root
         cd /tmp/android-root
         sudo chmod 777 /tmp/android-root
-        wget https://raw.githubusercontent.com/Lukyczk/ChromeOS-Setup-script/master/rooting%20scripts/02SEPatch.sh
+        wget https://raw.githubusercontent.com/LufyCZ/ChromeOS-Setup-script/master/rooting%20scripts/02SEPatch.sh
         sudo chmod +x 02SEPatch.sh
         sudo sh 02SEPatch.sh
 	sudo reboot
