@@ -1,0 +1,131 @@
+#!/bin/bash
+
+function fun_blink {
+	sudo backlight_tool --keyboard --set_brightness_percent=100
+	sleep 0.2
+	sudo backlight_tool --keyboard --set_brightness_percent=0
+	sleep 0.2
+}
+
+echo "Choose the speed. 1 is the slowest and 5 is the fastest"
+read ARG
+perc=0
+
+function fun_add {
+	while [ $perc -le 100 ]
+	do	
+		sudo backlight_tool --keyboard --set_brightness_percent=$perc
+		fun_perc_add
+	done
+fun_dec
+}
+
+
+function fun_dec {
+	until [ $perc -le 0 ]
+	do
+		sudo backlight_tool --keyboard --set_brightness_percent=$perc
+		fun_perc_dec
+	done
+fun_add
+}
+
+
+function fun_perc_add {
+	if [ $perc == 3 ]
+	then
+echo "Test"
+		sudo backlight_tool --keyboard --set_brightness_percent=0
+		fun_perc_add_sleep
+		((perc++))
+	elif [ $ARG == 1 ]
+	then
+		((perc++))
+	elif [ $ARG == 2 ]
+	then
+		((perc++))
+		((perc++))
+	elif [ $ARG == 3 ]
+	then
+		((perc++))
+                ((perc++))
+                ((perc++))
+	elif [ $ARG == 4 ]
+	then
+                ((perc++))  
+                ((perc++))  
+                ((perc++))  
+                ((perc++))
+	elif [ $ARG == 5 ]
+	then
+                ((perc++))  
+                ((perc++))  
+                ((perc++))  
+                ((perc++))  
+                ((perc++))
+	elif [ $ARG == -1 ]
+	then
+		((perc++))
+		sleep 0.02
+	fi
+}
+
+function fun_perc_dec {
+	if [ $ARG == 1 ]
+	then
+		((perc--))
+	elif [ $ARG == 2 ]
+	then
+                ((perc--)) 
+                ((perc--))
+	elif [ $ARG == 3 ]
+	then
+                ((perc--)) 
+                ((perc--)) 
+                ((perc--))
+	elif [ $ARG == 4 ]
+	then
+                ((perc--)) 
+                ((perc--)) 
+                ((perc--)) 
+                ((perc--)) 
+	elif [ $ARG == 5 ]
+	then
+                ((perc--)) 
+                ((perc--)) 
+                ((perc--)) 
+                ((perc--)) 
+                ((perc--)) 
+	elif [ $ARG == -1 ]
+	then
+		sleep 0.02
+		((perc--))
+	fi
+}
+
+function fun_perc_add_sleep {
+	if [ $ARG == -1 ]
+	then
+		sleep 0.7
+	elif [ $ARG == 1 ]
+	then
+		sleep 0.45
+	elif [ $ARG == 2 ]
+	then
+		sleep 0.3
+	elif [ $ARG == 3 ]
+	then
+		sleep 0.2
+	elif [ $ARG == 3 ]
+	then
+		sleep O.2
+	elif [ $ARG == 4 ]
+	then
+		sleep 0.2
+	elif [ $ARG == 5 ]
+	then
+		sleep 0.2
+	fi
+}
+
+fun_add
