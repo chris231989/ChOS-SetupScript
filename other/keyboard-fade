@@ -1,12 +1,5 @@
 #!/bin/bash
 
-function fun_blink {
-	sudo backlight_tool --keyboard --set_brightness_percent=100
-	sleep 0.2
-	sudo backlight_tool --keyboard --set_brightness_percent=0
-	sleep 0.2
-}
-
 echo "Choose the speed. 1 is the slowest and 5 is the fastest"
 read ARG
 perc=0
@@ -34,7 +27,6 @@ fun_add
 function fun_perc_add {
 	if [ $perc == 3 ]
 	then
-echo "Test"
 		sudo backlight_tool --keyboard --set_brightness_percent=0
 		fun_perc_add_sleep
 		((perc++))
