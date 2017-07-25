@@ -25,7 +25,7 @@ do
 	"Remove RootFS verification")
 	    echo_red "This will reboot your device"
 	    sleep 1
-	    sudo bash /usr/share/vboot/bin/make_dev_ssd.sh --remove_rootfs_verification --partitions 4
+	    sudo /usr/share/vboot/bin/make_dev_ssd.sh --remove_rootfs_verification --partitions $(( $(rootdev -s | sed -r 's/.*(.)$/\1/') - 1))
 	    sudo reboot
 ;;
         "Install Chromebrew")
@@ -139,7 +139,7 @@ function fun_android1 {
         sudo mkdir /tmp/android-root
         cd /tmp/android-root
         sudo chmod 777 /tmp/android-root
-        wget https://raw.githubusercontent.com/LufyCZ/ChromeOS-Setup-script/master/rooting%20scripts/01Root.sh
+        wget https://raw.githubusercontent.com/nolirium/aroc/master/01Root.sh
         sudo chmod +x 01Root.sh
         sudo sh 01Root.sh
 	cd ~/Downloads
@@ -152,7 +152,7 @@ function fun_android2 {
         sudo mkdir /tmp/android-root
         cd /tmp/android-root
         sudo chmod 777 /tmp/android-root
-        wget https://raw.githubusercontent.com/LufyCZ/ChromeOS-Setup-script/master/rooting%20scripts/02SEPatch.sh
+        wget https://raw.githubusercontent.com/nolirium/aroc/master/02SEPatch.sh
         sudo chmod +x 02SEPatch.sh
         sudo sh 02SEPatch.sh
 	sudo reboot
